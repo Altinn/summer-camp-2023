@@ -1,12 +1,8 @@
 import "./App.css";
-import * as vc from "./assets/academic.json";
+import VerifiableCredential from "./components/VerifiableCredential";
 
 function App() {
-  return (
-    <div>
-      <pre>{JSON.stringify(vc, null, 2)}</pre>
-    </div>
-  );
+  return <VerifiableCredential />;
 }
 
 export default App;
