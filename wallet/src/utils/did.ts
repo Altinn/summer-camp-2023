@@ -12,23 +12,24 @@ const resolverConfig = {
 // getResolver will return an object with a key/value pair of { "ebsi": resolver } where resolver is a function used by the generic DID resolver.
 const ebsiResolver = getResolver(resolverConfig);
 const keyResolver = getKeyResolver();
-const didResolver = new Resolver({
+const resolver = new Resolver({
   ...ebsiResolver,
   ...keyResolver,
 });
 
-// function generateDID(subjectIdentifierBytes: ArrayLike<number>) {
-//   const did = ebsiUtil.createDid(subjectIdentifierBytes);
-//   return did;
-// }
-
-function generateDID(jwk: JWK) {
-  const did = keyUtil.createDid(jwk);
-  return did;
+function generateDID(key: JWK | ArrayLike<number>) {
+  // veldig hacky men funker og trenger egentlig bare å bruke jwk
+  if (key.length === 16) {
+    const did = ebsiUtil.createDid(key as ArrayLike<number>);
+    return did;
+  } else {
+    const did = keyUtil.createDid(key as JWK);
+    return did;
+  }
 }
 
 async function resolveDID(did: string) {
-  const didDocument = await didResolver.resolve(did);
+  const didDocument = await resolver.resolve(did);
   return didDocument;
 }
 
