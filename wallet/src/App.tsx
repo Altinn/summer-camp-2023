@@ -6,6 +6,7 @@ import { generateDID, resolveDID } from "./utils/did";
 import { createRandomBytes } from "./utils/randomBytes";
 import * as key from "./assets/jwk.json";
 import { useSessionStorage } from "usehooks-ts";
+import { JWK } from "jose";
 
 function App() {
   const [DID, setDID] = useState("");
@@ -13,16 +14,9 @@ function App() {
   const [DIDdoc, setDIDdoc] = useSessionStorage("DID-document", "null");
 
   function handleGenerateDID() {
-    const jwk = {
-      kty: key.kty,
-      crv: key.crv,
-      kid: key.kid,
-      x: key.x,
-      y: key.y,
-    };
     // setDID("did:ebsi:ziDnioxYYLW1a3qUbqTFz4W"); // Garantert gyldig Legal Entity DID
     // setDID(generateDID(createRandomBytes(16)));
-    setDID(generateDID(jwk));
+    setDID(generateDID(JSON.parse(JSON.stringify(key)) as JWK));
   }
 
   useEffect(() => {
@@ -34,9 +28,21 @@ function App() {
   }, [DID, setDIDdoc]);
 
   useEffect(() => {
-    console.log(DIDdoc);
     DIDdoc !== "null" ? setValid("Gyldig") : setValid("Ugyldig");
   }, [DIDdoc]);
+
+  function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const fileReader = new FileReader();
+    fileReader.readAsText(e.target.files![0], "UTF-8");
+    fileReader.onload = (e) => {
+      try {
+        setDID(generateDID(JSON.parse(e.target!.result as string) as JWK));
+      } catch (err) {
+        alert("Ugyldig filformat");
+        clearSession();
+      }
+    };
+  }
 
   function clearSession() {
     setDID("");
@@ -46,9 +52,10 @@ function App() {
 
   return (
     <>
-      <VerifiableCredential token={vc} />
+      {/* <VerifiableCredential token={vc} /> */}
       <div>
         <br />
+        <input type="file" accept=".json, .txt" onChange={handleFile} />
         <br />
         <br />
         <button onClick={handleGenerateDID}>Generer DID</button>
