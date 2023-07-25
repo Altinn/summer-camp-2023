@@ -12,7 +12,7 @@ interface VerifiableCredentialProps {
 }
 
 function VerifiableCredential({ token }: VerifiableCredentialProps) {
-  const { id, type, credentialSubject, evidence } = token;
+  const { id, type, evidence } = token;
 
   return (
     <div>

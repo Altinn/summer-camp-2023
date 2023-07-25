@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import "./App.css";
-import * as vc from "./assets/academic.json";
-import VerifiableCredential from "./components/VerifiableCredential";
+import "./App.sass";
+// import * as vc from "./assets/academic.json";
+// import VerifiableCredential from "./components/VerifiableCredential";
 import { generateDID, resolveDID } from "./utils/did";
-import { createRandomBytes } from "./utils/randomBytes";
+// import { createRandomBytes } from "./utils/randomBytes";
 import * as key from "./assets/jwk.json";
 import { useSessionStorage } from "usehooks-ts";
 import { JWK } from "jose";
@@ -81,6 +81,11 @@ function App() {
         <br />
         <br />
       </div>
+      <footer>
+        <a href="https://www.flaticon.com/free-icons/money" title="money icons">
+          Money icons created by Freepik - Flaticon
+        </a>
+      </footer>
     </>
   );
 }
