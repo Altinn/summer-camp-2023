@@ -7,6 +7,7 @@ import { generateDID, resolveDID } from "./utils/did";
 import * as key from "./assets/jwk.json";
 import { useSessionStorage } from "usehooks-ts";
 import { JWK } from "jose";
+import localforage from "localforage";
 
 function App() {
   const [DID, setDID] = useState("");
@@ -23,6 +24,9 @@ function App() {
     resolveDID(DID)
       .then((res) => {
         setDIDdoc(JSON.stringify(res.didDocument, null, 2));
+        localforage
+          .setItem("DID-document", res.didDocument)
+          .catch((err) => console.log(err));
       })
       .catch((err) => console.log(err));
   }, [DID, setDIDdoc]);
@@ -81,11 +85,6 @@ function App() {
         <br />
         <br />
       </div>
-      <footer>
-        <a href="https://www.flaticon.com/free-icons/money" title="money icons">
-          Money icons created by Freepik - Flaticon
-        </a>
-      </footer>
     </>
   );
 }
