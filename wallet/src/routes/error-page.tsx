@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { isRouteErrorResponse, useRouteError } from "react-router-dom";
 
 function ErrorPage() {
@@ -32,7 +33,7 @@ function ErrorPage() {
       />
       <p>
         Her var det visst ingenting. Prøv å gå tilbake til{" "}
-        <a href="/">forsiden</a>.
+        <Link to="/">forsiden</Link>.
       </p>
     </div>
   );
