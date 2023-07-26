@@ -12,8 +12,11 @@
   "dependencies": {
     "@cef-ebsi/ebsi-did-resolver": "^3.1.0",
     "@cef-ebsi/key-did-resolver": "^1.1.0",
+    "@types/react-router-dom": "^5.3.3",
+    "localforage": "^1.10.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.14.2",
     "sass": "^1.64.1",
     "usehooks-ts": "^2.9.1"
   },
