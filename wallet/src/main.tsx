@@ -1,20 +1,29 @@
-import React from 'react'
+import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.sass";
-import App from "./App.tsx";
+import Wallet from "./routes/wallet.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ErrorPage from "./routes/error-page.tsx";
 import Root from "./routes/root.tsx";
+import RedirectComponent from "./components/RedirectComponent.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Root />,
+    element: <RedirectComponent path="/wallet" />,
     errorElement: <ErrorPage />,
+  },
+  {
+    path: "/",
+    element: <Root />,
     children: [
       {
-        path: "/wallet",
-        element: <App />,
+        path: "wallet",
+        element: <Wallet />,
+      },
+      {
+        path: "add",
+        element: <></>,
       },
     ],
   },

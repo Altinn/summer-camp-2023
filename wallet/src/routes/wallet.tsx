@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
-import "./App.sass";
+import style from "./wallet.module.sass";
 // import * as vc from "./assets/academic.json";
 // import VerifiableCredential from "./components/VerifiableCredential";
-import { generateDID, resolveDID } from "./utils/did";
+import { generateDID, resolveDID } from "../utils/did";
 // import { createRandomBytes } from "./utils/randomBytes";
-import * as key from "./assets/jwk.json";
+import * as key from "../assets/jwk.json";
 import { useSessionStorage } from "usehooks-ts";
 import { JWK } from "jose";
 import localforage from "localforage";
 
-function App() {
+function Wallet() {
   const [DID, setDID] = useState("");
   const [valid, setValid] = useState<"Gyldig" | "Ugyldig">("Ugyldig");
   const [DIDdoc, setDIDdoc] = useSessionStorage("DID-document", "null");
@@ -51,11 +51,10 @@ function App() {
   function clearSession() {
     setDID("");
     sessionStorage.clear();
-    // window.location.reload();
   }
 
   return (
-    <>
+    <div className={style.container}>
       {/* <VerifiableCredential token={vc} /> */}
       <div>
         <br />
@@ -64,29 +63,22 @@ function App() {
         <br />
         <button onClick={handleGenerateDID}>Generer DID</button>
       </div>
-      <pre>
-        <br />
-        {DID ? DID : "\n"}
-      </pre>
-      <pre>
-        <br />
+      <code className={style.code}>{DID ? DID : "\n"}</code>
+      <code className={style.code}>
         <b>DID Document:</b>
-        <pre>
-          <br />
-          {valid}
-        </pre>
         <br />
         <br />
-        {DIDdoc}
-      </pre>
+        {valid}
+      </code>
+      <code className={style.code}>{DIDdoc}</code>
       <div>
         <br />
         <button onClick={clearSession}>Clear session</button>
         <br />
         <br />
       </div>
-    </>
+    </div>
   );
 }
 
-export default App;
+export default Wallet;
