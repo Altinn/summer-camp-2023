@@ -8,6 +8,7 @@ import * as key from "../assets/jwk.json";
 import { useSessionStorage } from "usehooks-ts";
 import { JWK } from "jose";
 import localforage from "localforage";
+import { Button } from "@digdir/design-system-react";
 
 function Wallet() {
   const [DID, setDID] = useState("");
@@ -61,7 +62,14 @@ function Wallet() {
         <input type="file" accept=".json, .txt" onChange={handleFile} />
         <br />
         <br />
-        <button onClick={handleGenerateDID}>Generer DID</button>
+        <Button
+          variant="filled"
+          color="danger"
+          size="medium"
+          onClick={handleGenerateDID}
+        >
+          Generer DID
+        </Button>
       </div>
       <code className={style.code}>{DID ? DID : "\n"}</code>
       <code className={style.code}>
@@ -73,7 +81,7 @@ function Wallet() {
       <code className={style.code}>{DIDdoc}</code>
       <div>
         <br />
-        <button onClick={clearSession}>Clear session</button>
+        <Button onClick={clearSession}>Clear session</Button>
         <br />
         <br />
       </div>

@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ErrorPage from "./routes/error-page.tsx";
 import Root from "./routes/root.tsx";
 import RedirectComponent from "./components/RedirectComponent.tsx";
+import Add from "./routes/add.tsx";
 
 const router = createBrowserRouter([
   {
@@ -23,7 +24,7 @@ const router = createBrowserRouter([
       },
       {
         path: "add",
-        element: <></>,
+        element: <Add />,
       },
     ],
   },

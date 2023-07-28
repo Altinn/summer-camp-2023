@@ -12,6 +12,9 @@
   "dependencies": {
     "@cef-ebsi/ebsi-did-resolver": "^3.1.0",
     "@cef-ebsi/key-did-resolver": "^1.1.0",
+    "@digdir/design-system-react": "^0.20.0",
+    "@digdir/design-system-tokens": "^0.1.6",
+    "@navikt/aksel-icons": "^4.7.2",
     "@types/react-router-dom": "^5.3.3",
     "localforage": "^1.10.0",
     "react": "^18.2.0",
