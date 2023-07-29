@@ -398,4 +398,4 @@ FodyWeavers.xsd
 *.sln.iml
 
 #cache
-solidity-files-cache.json
+backend/cache/
