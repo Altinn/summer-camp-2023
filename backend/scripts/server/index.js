@@ -7,10 +7,8 @@ const {registerCredential} = require("./services/registerCredential.js");
 const app = express();
 const port = 5000;
 
-// Example adress for registry
-const REGISTRY_ADRESS = "0x5fbdb2315678afecb367f032d93f642f64180aa3";
 
-// Example adress for verification
+// Address of claims_Verifyer
 const VERIFYER_ADRESS = "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512";
 
 
