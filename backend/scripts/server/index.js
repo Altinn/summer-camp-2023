@@ -6,15 +6,22 @@ const {registerCredential} = require("./services/registerCredential.js");
 
 const app = express();
 const port = 5000;
-
+app.use(express.json());
 
 // Address of claims_Verifyer
 const VERIFYER_ADRESS = "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512";
 
 
-app.get('/', async (req, res) => {
-    console.log(ethers.version);
-    const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/");
+app.post('/register', async (req, res) => {
+    try {
+
+        const { did } = req.body;
+        console.log(did)
+        if(!did) {
+            return res.status(400).json({error: "DID is required"})
+        }
+
+        const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/");
       provider.getBlockNumber().then((result) => {
           console.log("Current block number: " + result);
       })
@@ -26,17 +33,24 @@ app.get('/', async (req, res) => {
       const abiVerifier = JSON.parse(fs.readFileSync(abiPathVerifier).toString()).abi;
       
       const contract = new ethers.Contract(VERIFYER_ADRESS, abiVerifier, wallet);
-      
-      /*
-      const registryFactory = await ethers.getContractFactory("ClaimsVerifier");
-      const registry = await registryFactory.attach(VERIFYER_ADRESS);
-      */
-      //const subject = "0x2546BcD3c84621e976D8185a91A922aE77ECEc30";
   
-      const credential = await registerCredential("0x2546BcD3c84621e976D8185a91A922aE77ECEc30", contract);
-
+      const credential = await registerCredential(did, contract);
+      res.status(201);
       res.send(credential);
+    } catch (error) {
+        console.log(error);
+        res.send(error);
+    }
+    
   })
+
+  app.use((err, req, res, next) => {
+    res.status(err.status || 500).json({
+      error: {
+        message: err.message || 'Internal Server Error',
+      },
+    });
+  });
 
 
 app.listen(port, () => {
