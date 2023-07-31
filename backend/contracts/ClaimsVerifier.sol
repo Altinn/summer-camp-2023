@@ -58,6 +58,22 @@ contract ClaimsVerifier is AbstractClaimsVerifier, ClaimTypes, AccessControlEnum
         return _registerCredential(msg.sender, _subject, _credentialHash, _from, _exp, _signature);
     }
 
+    //----------------------------------------------------------------
+
+    function revokeCredential(bytes calldata _signature, address _issuer, address _subject, bytes32 _credentialHash) public onlyIssuer returns (bool) {
+        
+        address signer = _credentialHash.recover(_signature);
+        
+        require(msg.sender == signer, "Sender has revoked the credential");
+        
+        //return _revokeCredential(_signature, _subject, _credentialHash);
+
+        return _verifyRevoked(_credentialHash, _issuer); //
+
+    }
+
+    //----------------------------------------------------------------
+
     function registerSignature(bytes32 _credentialHash, address issuer, bytes calldata _signature) public onlySigner returns (bool){
         address signer = _credentialHash.recover(_signature);
         require(msg.sender == signer, "Sender hasn't signed the credential");

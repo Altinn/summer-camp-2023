@@ -34,17 +34,14 @@ function getCredentialHash( vc, issuer, claimsVerifierContractAddress ) {
 	// Hashes the json representation of the VCs' credental subject which is the receiving DID and data to be sent
 	const hashDiplomaHex = `0x${sha256( JSON.stringify( vc.credentialSubject ) )}`;
 	
-	/*  Encodes the parameters for constructing the EIP-712 domain separator data
-		EIP-712 guarantees that the same data with different contexts (different domain separators) will produce different signatures
-	    Returns The ABI (application binary interface) signature of the event as a string */
+	
+	  //  Returns The ABI (application binary interface) signature of the event as a string 
 	const encodeEIP712Domain = web3Abi.encodeParameters(
 		['bytes32', 'bytes32', 'bytes32', 'uint256', 'address'], // Array that specifies the types of the parameters given to encodeParameters
 		[EIP712DOMAIN_TYPEHASH, web3Utils.sha3( "EIP712Domain" ), web3Utils.sha3( "1" ), 648529, claimsVerifierContractAddress] // Array with the parameters given to encodeParameters
 	);
 
-	/*  Calculates the SHA-256 hash of the encodeEIP712Domain variable. 
-	    In an asynchronous enviroment like within an Etherum smart contract web3.eth.soliditySha3 is preffered as it is asynchronous
-		web3Utils.soliditySha3 is the synchronous version and works in the context of a javascript enviroment */
+	// Returns the SHA-256 hash of the encodeEIP712Domain variable. 
 	const hashEIP712Domain = web3Utils.soliditySha3( encodeEIP712Domain );
 	
 	/* Converts the vc.issuanceDate received into a Unix timestamp, which is the number of mulliseconds that have elapsed since January 1, 1970 (UTC) */
@@ -56,8 +53,8 @@ function getCredentialHash( vc, issuer, claimsVerifierContractAddress ) {
 	/*  Extracts the DID method specific identifier. This is the adress the VC will be sent to  */
 	const subjectAddress = vc.credentialSubject.id.split( ':' ).slice( -1 )[0];
 
-	/* Encodes the parameters for constructing a hash of the Verifiable Credential. The hashed credential is used as part of the data that will be signed using the EIP-712 standard.
-	   EIP-712 is a standard used for encoding structured data for signing in Ethereum. */
+	// Encodes the parameters for constructing a hash of the Verifiable Credential. The hashed credential is used as part of the data that will be signed using the EIP-712 standard.
+
 	const encodeHashCredential = web3Abi.encodeParameters(
 		['bytes32', 'address', 'address', 'bytes32', 'uint256', 'uint256'], // Array that specifies the types of the parameters given to encodeParameters
 		[VERIFIABLE_CREDENTIAL_TYPEHASH, issuer.address, subjectAddress, hashDiplomaHex, Math.round( validFrom / 1000 ), Math.round( validTo / 1000 )] // Array with the parameters given to encodeParameters
@@ -71,9 +68,7 @@ function getCredentialHash( vc, issuer, claimsVerifierContractAddress ) {
 		['bytes32', 'bytes32'], // types of the parameters given to encodeCredentialHash
 		 [hashEIP712Domain, hashCredential.toString( 16 )] ); // parameters
 
-	/* Returns the hash of 1901 + encodedCredentialHash.substring( 2, 131 ) 
-	   encodedCredentialHash.substring(2, 131): This extracts a substring from the encodedCredentialHash starting from the character at index 2 and ending at index 130 (exclusive).
-	   The substring will contain characters from index 2 to 129 (a total of 127 characters). Since substring is zero-based, the first two characters (at index 0 and 1) will not be included in the substring. */
+	// Returns a hash
 	return web3Utils.soliditySha3( '0x1901'.toString( 16 ) + encodedCredentialHash.substring( 2, 131 ) ); 
 }
 
@@ -153,22 +148,59 @@ async function registerCredential(subject, registry) {
 }
 
 
-async function revokeCredential(subject){
-	const registryFactory = await ethers.getContractFactory("CredentialRegistry");
-	const registry = await registryFactory.attach(REGISTRY_ADRESS);
-	
-	// Call the revokeCredential function in the CredentialRegistry contract
-	const tx = await registry.revokeCredential(credentialHash);
-	
-	console.log("Credential has been revoked!");
-	return tx; // You can return the transaction object if needed
-	}
+async function revokeCredential(subject, registry) {
+   
+    // Issuer of VC
+    const issuer = {
+        address: "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", 
+        privateKey: 'ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
+    };
+    // signers of VC
+    const signers = [{
+        address: "0xdD2FD4581271e230360230F9337D5c0430Bf44C0", 
+        privateKey: 'de9be858da4a475276426320d5e9262ecfc3ba460bfac56360bfa6c4c28b4ee0'
+    }, {
+        address: "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199", 
+        privateKey: 'df57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e'
+    }]
 
-/*
+    // Grants issuer role to issuer
+    await registry.grantRole(await registry.ISSUER_ROLE(), issuer.address); 
+
+    const vc = {
+        "@context": "https://www.w3.org/2018/credentials/v1",
+        id: "73bde252-cb3e-44ab-94f9-eba6a8a2f28d",
+        type: "VerifiableCredential",
+        issuer: `did:lac:main:${issuer.address}`,
+        issuanceDate: moment().toISOString(),
+        expirationDate: moment().add( 1, 'years' ).toISOString(),
+        credentialSubject: {
+            id: `did:lac:main:${subject}`,
+            data: 'test'
+        },
+        proof: []
+    }
+    const credentialHash = getCredentialHash( vc, issuer, REGISTRY_ADRESS );
+
+
+    const signature = await signCredential( credentialHash, issuer );
+    const from = Math.round( moment( vc.issuanceDate ).valueOf() / 1000 );
+    const to = Math.round( moment( vc.expirationDate ).valueOf() / 1000 );
+
+    const test = await registry.revokeCredential(signature, issuer.address, subject, credentialHash);
+    console.log("Credential has been revoked!", test);
+
+    return test;
+    
+}
+
+
+
 async function main() {
+	const subject = "0x2546BcD3c84621e976D8185a91A922aE77ECEc30";
 
     console.log(ethers.version);
-  const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/");
+  	const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/");
 	provider.getBlockNumber().then((result) => {
 		console.log("Current block number: " + result);
 	})
@@ -187,8 +219,11 @@ async function main() {
 
 	console.log("Credential registered at the blockchain: ", credential);
 
+	const revoker = await revokeCredential(subject, contract);
+    console.log("Credential has been revoked",revoker);
 
 
+/* 
 
 	const data = `0x${sha256( JSON.stringify( vc.credentialSubject ) )}`;
 	const rsv = ethUtil.fromRpcSig( vc.proof[0].proofValue );
@@ -212,7 +247,7 @@ async function main() {
 	console.log("The credential signature is valid: ", issuerSignatureValid);
 	console.log("The credential has additional signers: ", additionalSigners);
 	console.log("the credential is not expired: ", isNotExpired);
-	
+	 */
 	
 }
 
@@ -223,7 +258,7 @@ async function main() {
       console.error(error);
       process.exit(1);
     });
-*/
+
 	module.exports = {
 		registerCredential,
 		revokeCredential,
