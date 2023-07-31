@@ -120,26 +120,19 @@ async function registerCredential(subject, registry) {
 		},
 		proof: []
 	}
-
-	console.log("Regisetering credential...");
 	// Hashes the data related to the VC, Issuer and the adress which receives the VC
 	const credentialHash = getCredentialHash( vc, issuer, VERIFYER_ADRESS );
 
 	// The hashed VC signed by the issuer
 	const signature = await signCredential( credentialHash, issuer );
-	
-	
-	// Transaction between the issuer and the receiver with proof
-	
-	console.log("Credential has been registered!");
-	// VC
 
 	const from = Math.round( moment( vc.issuanceDate ).valueOf() / 1000 );
 	const to = Math.round( moment( vc.expirationDate ).valueOf() / 1000 );
 
-	const tx = await registry.registerCredential( subject, credentialHash,
+	await registry.registerCredential( subject, credentialHash,
 		from,to,
 		signature, { from: issuer.address } );
+
 		vc.proof.push( {
 			id: vc.issuer,
 			type: "EcdsaSecp256k1Signature2019",
