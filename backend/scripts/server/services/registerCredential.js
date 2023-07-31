@@ -6,58 +6,52 @@ const ethUtil = require( "ethereumjs-util" );
 const { ethers } = require("hardhat");
 const fs = require("fs");
 
-// Returns a hash string or null if input is empty
 const VERIFIABLE_CREDENTIAL_TYPEHASH = web3Utils.soliditySha3( "VerifiableCredential(address issuer,address subject,bytes32 data,uint256 validFrom,uint256 validTo)" );
 
-// Returns a hash string or null if input is empty
+ //  Returns The ABI (application binary interface) signature of the event as a string 
 const EIP712DOMAIN_TYPEHASH = web3Utils.soliditySha3( "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)" );
 
-// Example adress for registry
+// Adress of credential registry
 const REGISTRY_ADRESS = "0x5fbdb2315678afecb367f032d93f642f64180aa3";
 
-// Example adress for verification
+// Adress of claims verifier
 const VERIFYER_ADRESS = "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512";
 
-/* Sleep represents a delay in the execution of asynchronous code
-   for the specified number of seconds.  */
 const sleep = seconds => new Promise( resolve => setTimeout( resolve, seconds ) );
 
-// Gives a SHA-256 hash of the given input data. Returns a string of 32 bytes
 function sha256( data ) {
 	const hashFn = crypto.createHash( 'sha256' );
 	hashFn.update( data );
 	return hashFn.digest( 'hex' );
 }
 
+//Generates a hash based on the VC, issuer and adress of the claims verifier
 function getCredentialHash( vc, issuer, claimsVerifierContractAddress ) {
 
-	// Hashes the json representation of the VCs' credental subject which is the receiving DID and data to be sent
 	const hashDiplomaHex = `0x${sha256( JSON.stringify( vc.credentialSubject ) )}`;
 	
 	
 	  //  Returns The ABI (application binary interface) signature of the event as a string 
 	const encodeEIP712Domain = web3Abi.encodeParameters(
-		['bytes32', 'bytes32', 'bytes32', 'uint256', 'address'], // Array that specifies the types of the parameters given to encodeParameters
-		[EIP712DOMAIN_TYPEHASH, web3Utils.sha3( "EIP712Domain" ), web3Utils.sha3( "1" ), 648529, claimsVerifierContractAddress] // Array with the parameters given to encodeParameters
+		['bytes32', 'bytes32', 'bytes32', 'uint256', 'address'], 
+		[EIP712DOMAIN_TYPEHASH, web3Utils.sha3( "EIP712Domain" ), web3Utils.sha3( "1" ), 648529, claimsVerifierContractAddress] 
 	);
 
 	// Returns the SHA-256 hash of the encodeEIP712Domain variable. 
 	const hashEIP712Domain = web3Utils.soliditySha3( encodeEIP712Domain );
 	
-	/* Converts the vc.issuanceDate received into a Unix timestamp, which is the number of mulliseconds that have elapsed since January 1, 1970 (UTC) */
 	const validFrom = new Date( vc.issuanceDate ).getTime();
 
-	/* Converts the vc.expirationDate received into a Unix timestamp, which is the number of mulliseconds that have elapsed since January 1, 1970 (UTC) */
 	const validTo = new Date( vc.expirationDate ).getTime();
 
-	/*  Extracts the DID method specific identifier. This is the adress the VC will be sent to  */
 	const subjectAddress = vc.credentialSubject.id.split( ':' ).slice( -1 )[0];
 
 	// Encodes the parameters for constructing a hash of the Verifiable Credential. The hashed credential is used as part of the data that will be signed using the EIP-712 standard.
 
+	
 	const encodeHashCredential = web3Abi.encodeParameters(
-		['bytes32', 'address', 'address', 'bytes32', 'uint256', 'uint256'], // Array that specifies the types of the parameters given to encodeParameters
-		[VERIFIABLE_CREDENTIAL_TYPEHASH, issuer.address, subjectAddress, hashDiplomaHex, Math.round( validFrom / 1000 ), Math.round( validTo / 1000 )] // Array with the parameters given to encodeParameters
+		['bytes32', 'address', 'address', 'bytes32', 'uint256', 'uint256'], 
+		[VERIFIABLE_CREDENTIAL_TYPEHASH, issuer.address, subjectAddress, hashDiplomaHex, Math.round( validFrom / 1000 ), Math.round( validTo / 1000 )] 
 	);
 
 	/* Calculates the SHA-256 hash of the encodeEIP712Domain variable. */
@@ -65,30 +59,33 @@ function getCredentialHash( vc, issuer, claimsVerifierContractAddress ) {
 
 	/* Encodes the parameters hashEIP712Domain (assures different signature) and the hexidecimal string representation of the hash of the VC */
 	const encodedCredentialHash = web3Abi.encodeParameters( 
-		['bytes32', 'bytes32'], // types of the parameters given to encodeCredentialHash
-		 [hashEIP712Domain, hashCredential.toString( 16 )] ); // parameters
+		['bytes32', 'bytes32'], 
+		 [hashEIP712Domain, hashCredential.toString( 16 )] ); 
 
 	// Returns a hash
 	return web3Utils.soliditySha3( '0x1901'.toString( 16 ) + encodedCredentialHash.substring( 2, 131 ) ); 
 }
 
-	/* Takes the credentialHash and the issuer's private key as inputs, signs the hash using the private key, and returns the resulting signature in the RPC-style format. */
+/* Takes the credentialHash and the issuer's private key as inputs, signs the hash using the private key, and returns the resulting signature in the RPC-style format. */
 function signCredential( credentialHash, issuer ) {
 	const rsv = ethUtil.ecsign(
-		Buffer.from( credentialHash.substring( 2, 67 ), 'hex' ), // takes a substring of credentialHash starting from index 2 and ending at index 66 (inclusive). The substring will contain the first 32 bytes (64 characters) of the hash. Returns a Buffer object
-		Buffer.from( issuer.privateKey, 'hex' ) // This takes the issuer's private key represented as a hexadecimal string and converts it to a Buffer object.
+		Buffer.from( credentialHash.substring( 2, 67 ), 'hex' ), 
+		Buffer.from( issuer.privateKey, 'hex' ) 
 	);
 	return ethUtil.toRpcSig( rsv.v, rsv.r, rsv.s ); // returns an object rsv containing three properties: r, s, and v. These values represent the signature components used in Ethereum.
 }
 
+//TODO
+//Expand so it takes all nescecary subject data
 async function registerCredential(subject, registry) {
 
-	// Issuer of VC
+    //TODO
+    //Make issuer and signers dynamic
 	const issuer = {
 		address: "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", 
 		privateKey: 'ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
 	};
-	// signers of VC
+
 	const signers = [{
 		address: "0xdD2FD4581271e230360230F9337D5c0430Bf44C0", 
 		privateKey: 'de9be858da4a475276426320d5e9262ecfc3ba460bfac56360bfa6c4c28b4ee0'
@@ -96,12 +93,11 @@ async function registerCredential(subject, registry) {
 		address: "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199", 
 		privateKey: 'df57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e'
 	}]
-	// Grants issuer role to issuer
+
 	await registry.grantRole(await registry.ISSUER_ROLE(), issuer.address); 
-	// Grants issuer role to the first element in the signers array
 	await registry.grantRole(await registry.ISSUER_ROLE(), signers[0].address); 
-	// Grants issuer role to the second element in the signers array
 	await registry.grantRole(await registry.ISSUER_ROLE(), signers[1].address); 
+
 	const vc = {
 		"@context": "https://www.w3.org/2018/credentials/v1",
 		id: "73bde252-cb3e-44ab-94f9-eba6a8a2f28d",
@@ -115,26 +111,19 @@ async function registerCredential(subject, registry) {
 		},
 		proof: []
 	}
-
-	console.log("Regisetering credential...");
 	// Hashes the data related to the VC, Issuer and the adress which receives the VC
 	const credentialHash = getCredentialHash( vc, issuer, VERIFYER_ADRESS );
 
 	// The hashed VC signed by the issuer
 	const signature = await signCredential( credentialHash, issuer );
-	
-	
-	// Transaction between the issuer and the receiver with proof
-	
-	console.log("Credential has been registered!");
-	// VC
 
 	const from = Math.round( moment( vc.issuanceDate ).valueOf() / 1000 );
 	const to = Math.round( moment( vc.expirationDate ).valueOf() / 1000 );
 
-	const tx = await registry.registerCredential( subject, credentialHash,
+	await registry.registerCredential( subject, credentialHash,
 		from,to,
 		signature, { from: issuer.address } );
+
 		vc.proof.push( {
 			id: vc.issuer,
 			type: "EcdsaSecp256k1Signature2019",
@@ -145,6 +134,21 @@ async function registerCredential(subject, registry) {
 		} );
 
 		return vc;
+}
+
+async function verifyCredential(vc, instance) {
+    const data = `0x${sha256( JSON.stringify( vc.credentialSubject ) )}`;
+	const rsv = ethUtil.fromRpcSig( vc.proof[0].proofValue );
+    const result = await instance.verifyCredential( [
+        vc.issuer.replace( 'did:lac:main:', '' ),
+        vc.credentialSubject.id.replace( 'did:lac:main:', '' ),
+        data,
+        Math.round( moment( vc.issuanceDate ).valueOf() / 1000 ),
+        Math.round( moment( vc.expirationDate ).valueOf() / 1000 )
+    ], rsv.v, rsv.r, rsv.s );
+
+    return result;
+
 }
 
 
@@ -219,6 +223,7 @@ async function main() {
 
 	console.log("Credential registered at the blockchain: ", credential);
 
+    console.log("Contract adress: ", contract.address);
 	const revoker = await revokeCredential(subject, contract);
     console.log("Credential has been revoked",revoker);
 
@@ -236,6 +241,8 @@ async function main() {
 		Math.round( moment( vc.expirationDate ).valueOf() / 1000 )
 	], rsv.v, rsv.r, rsv.s );
 
+    const result = await verifyCredential(credential, contract);
+	
 	const credentialExists = result[0];
 	const isNotRevoked = result[1];
 	const issuerSignatureValid = result[2];
@@ -262,5 +269,6 @@ async function main() {
 	module.exports = {
 		registerCredential,
 		revokeCredential,
-		getCredentialHash
+		getCredentialHash,
+        verifyCredential
 		};
