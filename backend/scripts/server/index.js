@@ -6,6 +6,8 @@ const {registerCredential} = require("./services/registerCredential.js");
 
 const app = express();
 const port = 5000;
+
+//app.use(cors());
 app.use(express.json());
 
 // Address of claims_Verifyer
@@ -43,6 +45,34 @@ app.post('/register', async (req, res) => {
     }
     
   })
+
+// POST endpoint to save data to a file
+  app.post('/save', (req, res) => {
+    try {
+
+
+      const jsonData = JSON.stringify(req.body);
+
+      fs.writeFileSync('data.json', jsonData);
+
+      res.status(200).send('Data saved successfully');
+    } catch (error) {
+      console.error('Error saving data', error);
+      res.status(500).send('Error saving data')
+    }
+  });
+// DELETE endpoint to cleqar the file
+  app.delete('/clear', (req, res) => {
+    try {
+
+      fs.writeFileSync('data.json', '{}');
+      res.status(200).send('Fle cleared successfully');
+    } catch (error) {
+      console.error('Error clearing file', error);
+      res.status(500).send('Error clearing file');
+    }
+  });
+
 
   app.use((err, req, res, next) => {
     res.status(err.status || 500).json({
