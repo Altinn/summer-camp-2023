@@ -77,7 +77,7 @@ function signCredential( credentialHash, issuer ) {
 
 //TODO
 //Expand so it takes all nescecary subject data
-async function registerCredential(subject, registry) {
+async function registerCredential(subjectDID, firstName, lastName, expDate, location, municipality, alcoGroup, registry) {
 
     //TODO
     //Make issuer and signers dynamic
@@ -98,16 +98,24 @@ async function registerCredential(subject, registry) {
 	await registry.grantRole(await registry.ISSUER_ROLE(), signers[0].address); 
 	await registry.grantRole(await registry.ISSUER_ROLE(), signers[1].address); 
 
+    const subjectAddress = subjectDID.split( ':' ).slice( -1 )[0];
+
 	const vc = {
 		"@context": "https://www.w3.org/2018/credentials/v1",
 		id: "73bde252-cb3e-44ab-94f9-eba6a8a2f28d",
 		type: "VerifiableCredential",
 		issuer: `did:lac:main:${issuer.address}`,
 		issuanceDate: moment().toISOString(),
-		expirationDate: moment().add( 1, 'years' ).toISOString(),
+		expirationDate: moment(expDate, "DD-MM-YYYY").toISOString(),
 		credentialSubject: {
-			id: `did:lac:main:${subject}`,
-			data: 'test'
+			id: subjectDID,
+			data: {
+                firstName: firstName,
+                lastName: lastName,
+                location: location,
+                municipality: municipality,
+                alcoGroup: alcoGroup
+            }
 		},
 		proof: []
 	}
@@ -120,7 +128,7 @@ async function registerCredential(subject, registry) {
 	const from = Math.round( moment( vc.issuanceDate ).valueOf() / 1000 );
 	const to = Math.round( moment( vc.expirationDate ).valueOf() / 1000 );
 
-	await registry.registerCredential( subject, credentialHash,
+	await registry.registerCredential( subjectAddress, credentialHash,
 		from,to,
 		signature, { from: issuer.address } );
 
@@ -199,7 +207,7 @@ async function revokeCredential(subject, registry) {
 }
 
 
-
+/*
 async function main() {
 	const subject = "0x2546BcD3c84621e976D8185a91A922aE77ECEc30";
 
@@ -228,7 +236,7 @@ async function main() {
     console.log("Credential has been revoked",revoker);
 
 
-/* 
+
 
 	const data = `0x${sha256( JSON.stringify( vc.credentialSubject ) )}`;
 	const rsv = ethUtil.fromRpcSig( vc.proof[0].proofValue );
@@ -254,7 +262,7 @@ async function main() {
 	console.log("The credential signature is valid: ", issuerSignatureValid);
 	console.log("The credential has additional signers: ", additionalSigners);
 	console.log("the credential is not expired: ", isNotExpired);
-	 */
+	 
 	
 }
 
@@ -265,7 +273,7 @@ async function main() {
       console.error(error);
       process.exit(1);
     });
-
+*/
 	module.exports = {
 		registerCredential,
 		revokeCredential,
