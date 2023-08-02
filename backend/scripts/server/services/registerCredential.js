@@ -17,6 +17,11 @@ const REGISTRY_ADRESS = "0x5fbdb2315678afecb367f032d93f642f64180aa3";
 // Adress of claims verifier
 const VERIFYER_ADRESS = "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512";
 
+const issuer = {
+    address: "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", 
+    privateKey: 'ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
+};
+
 const sleep = seconds => new Promise( resolve => setTimeout( resolve, seconds ) );
 
 function sha256( data ) {
@@ -81,10 +86,6 @@ async function registerCredential(subjectDID, firstName, lastName, expDate, loca
 
     //TODO
     //Make issuer and signers dynamic
-	const issuer = {
-		address: "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", 
-		privateKey: 'ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
-	};
 
 	const signers = [{
 		address: "0xdD2FD4581271e230360230F9337D5c0430Bf44C0", 
@@ -161,50 +162,15 @@ async function verifyCredential(vc, instance) {
 }
 
 
-async function revokeCredential(subject, registry) {
-   
-    // Issuer of VC
-    const issuer = {
-        address: "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", 
-        privateKey: 'ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
-    };
-    // signers of VC
-    const signers = [{
-        address: "0xdD2FD4581271e230360230F9337D5c0430Bf44C0", 
-        privateKey: 'de9be858da4a475276426320d5e9262ecfc3ba460bfac56360bfa6c4c28b4ee0'
-    }, {
-        address: "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199", 
-        privateKey: 'df57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e'
-    }]
+async function revokeCredential(vc, instance) {
+  
+    const credentialHash = getCredentialHash(vc, issuer, VERIFYER_ADRESS);
 
-    // Grants issuer role to issuer
-    await registry.grantRole(await registry.ISSUER_ROLE(), issuer.address); 
+    const result = await instance.revokeCredential(credentialHash);
 
-    const vc = {
-        "@context": "https://www.w3.org/2018/credentials/v1",
-        id: "73bde252-cb3e-44ab-94f9-eba6a8a2f28d",
-        type: "VerifiableCredential",
-        issuer: `did:lac:main:${issuer.address}`,
-        issuanceDate: moment().toISOString(),
-        expirationDate: moment().add( 1, 'years' ).toISOString(),
-        credentialSubject: {
-            id: `did:lac:main:${subject}`,
-            data: 'test'
-        },
-        proof: []
-    }
-    const credentialHash = getCredentialHash( vc, issuer, REGISTRY_ADRESS );
+    return result;
 
 
-    const signature = await signCredential( credentialHash, issuer );
-    const from = Math.round( moment( vc.issuanceDate ).valueOf() / 1000 );
-    const to = Math.round( moment( vc.expirationDate ).valueOf() / 1000 );
-
-    const test = await registry.revokeCredential(signature, issuer.address, subject, credentialHash);
-    console.log("Credential has been revoked!", test);
-
-    return test;
-    
 }
 
 

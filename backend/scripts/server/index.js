@@ -2,7 +2,7 @@ const express = require('express');
 const ethers = require('ethers');
 const path = require('path');
 const fs = require('fs');
-const {registerCredential, verifyCredential} = require("./services/registerCredential.js");
+const {registerCredential, verifyCredential, revokeCredential} = require("./services/registerCredential.js");
 const exp = require('constants');
 
 const app = express();
@@ -13,6 +13,7 @@ app.use(express.json());
 
 // Address of claims_Verifyer
 const VERIFYER_ADRESS = "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512";
+const REGISTRY_ADRESS = "0x5fbdb2315678afecb367f032d93f642f64180aa3";
 
 const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/");
       provider.getBlockNumber().then((result) => {
@@ -26,6 +27,11 @@ const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/");
       const abiVerifier = JSON.parse(fs.readFileSync(abiPathVerifier).toString()).abi;
       
       const contract = new ethers.Contract(VERIFYER_ADRESS, abiVerifier, wallet);
+
+      const abiPathRegistry = "./artifacts/contracts/CredentialRegistry.sol/CredentialRegistry.json";
+      const abiRegistry = JSON.parse(fs.readFileSync(abiPathRegistry).toString()).abi;
+
+      const registry = new ethers.Contract(REGISTRY_ADRESS, abiRegistry, wallet);
 
 
 app.post('/register', async (req, res) => {
@@ -62,8 +68,18 @@ app.post('/verify', async (req, res) => {
   const result = await verifyCredential(vc, contract);
   if(result[0] == true && result[1] == true && result[2] == true && result[3] == true && result[4] ==true){
     res.send(true);
-  }
-  res.send(false);
+  }else res.send(false);
+  
+})
+
+app.post("/revoke", async (req, res) => {
+
+    const {vc} = req.body;
+
+    const result = await revokeCredential(vc, registry);
+
+    res.send(result[0]);
+
 })
 
 // DELETE endpoint to cleqar the file
