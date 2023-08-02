@@ -58,8 +58,9 @@ app.post('/register', async (req, res) => {
 app.post('/verify', async (req, res) => {
   const { vc } = req.body;
   console.log(vc);
+
   const result = await verifyCredential(vc, contract);
-  if(result[0] == true && result[1] ==true && result[2] ==true && result[3] ==true && result[4] ==true){
+  if(result[0] == true && result[1] == true && result[2] == true && result[3] == true && result[4] ==true){
     res.send(true);
   }
   res.send(false);

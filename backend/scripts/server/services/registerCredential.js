@@ -145,11 +145,12 @@ async function registerCredential(subjectDID, firstName, lastName, expDate, loca
 }
 
 async function verifyCredential(vc, instance) {
+
     const data = `0x${sha256( JSON.stringify( vc.credentialSubject ) )}`;
 	const rsv = ethUtil.fromRpcSig( vc.proof[0].proofValue );
     const result = await instance.verifyCredential( [
         vc.issuer.replace( 'did:lac:main:', '' ),
-        vc.credentialSubject.id.replace( 'did:lac:main:', '' ),
+        vc.credentialSubject.id.replace( 'did:digdir:', '' ),
         data,
         Math.round( moment( vc.issuanceDate ).valueOf() / 1000 ),
         Math.round( moment( vc.expirationDate ).valueOf() / 1000 )
@@ -230,24 +231,6 @@ async function main() {
 	const credential = await registerCredential("0x2546BcD3c84621e976D8185a91A922aE77ECEc30", contract);
 
 	console.log("Credential registered at the blockchain: ", credential);
-
-    console.log("Contract adress: ", contract.address);
-	const revoker = await revokeCredential(subject, contract);
-    console.log("Credential has been revoked",revoker);
-
-
-
-
-	const data = `0x${sha256( JSON.stringify( vc.credentialSubject ) )}`;
-	const rsv = ethUtil.fromRpcSig( vc.proof[0].proofValue );
-
-	const result = await registry.verifyCredential( [
-		vc.issuer.replace('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266' ),
-		vc.credentialSubject.id.replace('0x2546BcD3c84621e976D8185a91A922aE77ECEc30' ),
-		data,
-		Math.round( moment( vc.issuanceDate ).valueOf() / 1000 ),
-		Math.round( moment( vc.expirationDate ).valueOf() / 1000 )
-	], rsv.v, rsv.r, rsv.s );
 
     const result = await verifyCredential(credential, contract);
 	
