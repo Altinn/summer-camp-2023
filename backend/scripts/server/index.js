@@ -3,6 +3,7 @@ const ethers = require('ethers');
 const path = require('path');
 const fs = require('fs');
 const {registerCredential} = require("./services/registerCredential.js");
+const exp = require('constants');
 
 const app = express();
 const port = 5000;
@@ -17,7 +18,7 @@ const VERIFYER_ADRESS = "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512";
 app.post('/register', async (req, res) => {
     try {
 
-        const { did } = req.body;
+        const { did, firstName, lastName, expDate, location, municipality, alcoGroup } = req.body;
         console.log(did)
         if(!did) {
             return res.status(400).json({error: "DID is required"})
@@ -36,7 +37,7 @@ app.post('/register', async (req, res) => {
       
       const contract = new ethers.Contract(VERIFYER_ADRESS, abiVerifier, wallet);
   
-      const credential = await registerCredential(did, contract);
+      const credential = await registerCredential(did, firstName, lastName, expDate, location, municipality, alcoGroup, contract);
       res.status(201);
       res.send(credential);
     } catch (error) {
