@@ -121,7 +121,7 @@ async function registerCredential(subjectDID, firstName, lastName, expDate, loca
 	}
 	// Hashes the data related to the VC, Issuer and the adress which receives the VC
 	const credentialHash = getCredentialHash( vc, issuer, VERIFYER_ADRESS );
-
+    console.log("Credential hash: ", credentialHash);
 	// The hashed VC signed by the issuer
 	const signature = await signCredential( credentialHash, issuer );
 
