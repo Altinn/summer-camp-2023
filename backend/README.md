@@ -1,13 +1,9 @@
-# Sample Hardhat Project
+Blockchain and server
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+npm i to install dependencies
 
-Try running some of the following tasks:
+npx hardhat node for starting the blockchain
 
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.js
-```
+npx hardhat run --network localhost scripts/deploy.js for depploying the smart contracts
+
+node scripts/server/index.js for starting the server
