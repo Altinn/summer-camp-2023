@@ -63,11 +63,6 @@ app.post('/register', async (req, res) => {
 
 app.post('/verify', async (req, res) => {
   const { vc } = req.body;
-  console.log(result[0]);
-  console.log(result[1]);
-  console.log(result[2]);
-  console.log(result[3]);
-  console.log(result[4]);
 
   const result = await verifyCredential(vc, contract);
   if(result[0] == true && result[1] == true && result[2] == true && result[3] == true && result[4] ==true){
