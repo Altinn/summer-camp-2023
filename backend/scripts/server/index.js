@@ -78,11 +78,7 @@ app.post("/revoke", async (req, res) => {
 
     const result = await revokeCredential(vc, registry);
 
-    if(result[0] == 1) {
-        res.send(true);
-    } else res.send(false);
-
-    
+    res.send(result[0]);
 
 })
 
