@@ -38,7 +38,6 @@ app.post('/register', async (req, res) => {
     try {
 
         const { did, firstName, lastName, expDate, location, municipality, alcoGroup } = req.body;
-        console.log(did)
 
         //save data to a local file
         const jsonData = JSON.stringify(req.body);
@@ -51,7 +50,7 @@ app.post('/register', async (req, res) => {
 
         
   
-      const credential = await registerCredential(did, firstName, lastName, expDate, location, municipality, alcoGroup, contract);
+      const credential = await registerCredential(did, firstName, lastName, expDate, location, municipality, alcoGroup, contract, VERIFYER_ADRESS);
       res.status(201);
       res.send(credential);
     } catch (error) {
@@ -62,31 +61,39 @@ app.post('/register', async (req, res) => {
   });
 
 app.post('/verify', async (req, res) => {
-  const { vc } = req.body;
+    try {
+        const { vc } = req.body;
 
-  const result = await verifyCredential(vc, contract);
-  if(result[0] == true && result[1] == true && result[2] == true && result[3] == true && result[4] ==true){
-    res.send(true);
-  }else res.send(false);
-  
+        const result = await verifyCredential(vc, contract);
+        if(result[0] == true && result[1] == true && result[2] == true && result[3] == true && result[4] ==true){
+          res.send(true);
+        }else res.send(false);
+    } catch (error) {
+        res.send(error);
+        console.log(error);
+    }
 })
 
 app.post("/revoke", async (req, res) => {
 
-    const {vc} = req.body;
+    try {
+        const {vc} = req.body;
 
-    const result = await revokeCredential(vc, registry);
-
-    res.send(result[0]);
-
+        const result = await revokeCredential(vc, registry, VERIFYER_ADRESS);
+    
+        res.send(result[0]);
+    } catch (error) {
+        res.send(error);
+        console.log(error);
+    }
 })
 
-// DELETE endpoint to cleqar the file
+// DELETE endpoint to clear the file
   app.delete('/clear', (req, res) => {
     try {
 
       fs.writeFileSync('data.json', '{}');
-      res.status(200).send('Fle cleared successfully');
+      res.status(200).send('File cleared successfully');
     } catch (error) {
       console.error('Error clearing file', error);
       res.status(500).send('Error clearing file');

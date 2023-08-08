@@ -11,9 +11,6 @@ const VERIFIABLE_CREDENTIAL_TYPEHASH = web3Utils.soliditySha3( "VerifiableCreden
  //  Returns The ABI (application binary interface) signature of the event as a string 
 const EIP712DOMAIN_TYPEHASH = web3Utils.soliditySha3( "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)" );
 
-// Adress of credential registry
-const REGISTRY_ADRESS = "0x5fbdb2315678afecb367f032d93f642f64180aa3";
-
 // Adress of claims verifier
 const VERIFYER_ADRESS = "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512";
 
@@ -82,7 +79,7 @@ function signCredential( credentialHash, issuer ) {
 
 //TODO
 //Expand so it takes all nescecary subject data
-async function registerCredential(subjectDID, firstName, lastName, expDate, location, municipality, alcoGroup, registry) {
+async function registerCredential(subjectDID, firstName, lastName, expDate, location, municipality, alcoGroup, registry, verifier_adress) {
 
     //TODO
     //Make issuer and signers dynamic
@@ -121,7 +118,7 @@ async function registerCredential(subjectDID, firstName, lastName, expDate, loca
 		proof: []
 	}
 	// Hashes the data related to the VC, Issuer and the adress which receives the VC
-	const credentialHash = getCredentialHash( vc, issuer, VERIFYER_ADRESS );
+	const credentialHash = getCredentialHash( vc, issuer, verifier_adress );
     console.log("Credential hash: ", credentialHash);
 	// The hashed VC signed by the issuer
 	const signature = await signCredential( credentialHash, issuer );
@@ -162,9 +159,9 @@ async function verifyCredential(vc, instance) {
 }
 
 
-async function revokeCredential(vc, instance) {
+async function revokeCredential(vc, instance, verifier_adress) {
   
-    const credentialHash = getCredentialHash(vc, issuer, VERIFYER_ADRESS);
+    const credentialHash = getCredentialHash(vc, issuer, verifier_adress);
 
     const result = await instance.revokeCredential(credentialHash);
 
@@ -173,56 +170,6 @@ async function revokeCredential(vc, instance) {
 
 }
 
-
-/*
-async function main() {
-	const subject = "0x2546BcD3c84621e976D8185a91A922aE77ECEc30";
-
-    console.log(ethers.version);
-  	const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/");
-	provider.getBlockNumber().then((result) => {
-		console.log("Current block number: " + result);
-	})
-
-    const privateKey = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
-  	const wallet = new ethers.Wallet(privateKey, provider);
-
-	const abiPathVerifier = "./artifacts/contracts/ClaimsVerifier.sol/ClaimsVerifier.json";
-	const abiVerifier = JSON.parse(fs.readFileSync(abiPathVerifier).toString()).abi;
-	
-	const contract = new ethers.Contract(VERIFYER_ADRESS, abiVerifier, wallet);
-	
-
-
-	const credential = await registerCredential("0x2546BcD3c84621e976D8185a91A922aE77ECEc30", contract);
-
-	console.log("Credential registered at the blockchain: ", credential);
-
-    const result = await verifyCredential(credential, contract);
-	
-	const credentialExists = result[0];
-	const isNotRevoked = result[1];
-	const issuerSignatureValid = result[2];
-	const additionalSigners = result[3];
-	const isNotExpired = result[4];
-
-	console.log("Credential exists: ", credentialExists);
-	console.log("Credential is not revoked: ", isNotRevoked);
-	console.log("The credential signature is valid: ", issuerSignatureValid);
-	console.log("The credential has additional signers: ", additionalSigners);
-	console.log("the credential is not expired: ", isNotExpired);
-	 
-	
-}
-
-  
-  main()
-    .then(() => process.exit(0))
-    .catch(error => {
-      console.error(error);
-      process.exit(1);
-    });
-*/
 	module.exports = {
 		registerCredential,
 		revokeCredential,
