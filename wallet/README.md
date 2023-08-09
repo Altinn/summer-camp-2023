@@ -16,7 +16,8 @@ Clone the repository and run `npm install` to install dependencies.
 Create a Json Web Key (JWK) for the wallet to use, and place it in the `src/assets` folder as `jwk.json`.
 
 A JWK can be generated in several ways:
-- Using the [JWK Generator](https://mkjwk.org/) 
+
+- Using the [JWK Generator](https://mkjwk.org/)
    1. Select the `EC` algorithm with the `P-256` curve, key use `Encryption`, algorithm `ECDH-ES+A128KW`, and key ID `SHA-256`.
    2. Copy the public key, and paste it into the `jwk.json` file.
 - Using the [json-web-key-generator](https://github.com/bspk/json-web-key-generator):
