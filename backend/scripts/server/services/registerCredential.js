@@ -11,15 +11,10 @@ const VERIFIABLE_CREDENTIAL_TYPEHASH = web3Utils.soliditySha3( "VerifiableCreden
  //  Returns The ABI (application binary interface) signature of the event as a string 
 const EIP712DOMAIN_TYPEHASH = web3Utils.soliditySha3( "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)" );
 
-// Adress of claims verifier
-const VERIFYER_ADRESS = "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512";
-
 const issuer = {
     address: "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", 
     privateKey: 'ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
 };
-
-const sleep = seconds => new Promise( resolve => setTimeout( resolve, seconds ) );
 
 function sha256( data ) {
 	const hashFn = crypto.createHash( 'sha256' );
@@ -50,7 +45,6 @@ function getCredentialHash( vc, issuer, claimsVerifierContractAddress ) {
 
 	// Encodes the parameters for constructing a hash of the Verifiable Credential. The hashed credential is used as part of the data that will be signed using the EIP-712 standard.
 
-	
 	const encodeHashCredential = web3Abi.encodeParameters(
 		['bytes32', 'address', 'address', 'bytes32', 'uint256', 'uint256'], 
 		[VERIFIABLE_CREDENTIAL_TYPEHASH, issuer.address, subjectAddress, hashDiplomaHex, Math.round( validFrom / 1000 ), Math.round( validTo / 1000 )] 
@@ -79,7 +73,9 @@ function signCredential( credentialHash, issuer ) {
 
 //TODO
 //Expand so it takes all nescecary subject data
-async function registerCredential(subjectDID, firstName, lastName, expDate, location, municipality, alcoGroup, registry, verifier_adress) {
+async function registerCredential(
+    subjectDID, firstName, lastName, expDate, municipality, registry, verifier_adress
+    ) {
 
     //TODO
     //Make issuer and signers dynamic
@@ -110,9 +106,7 @@ async function registerCredential(subjectDID, firstName, lastName, expDate, loca
 			data: {
                 firstName: firstName,
                 lastName: lastName,
-                location: location,
-                municipality: municipality,
-                alcoGroup: alcoGroup
+                municipality: municipality
             }
 		},
 		proof: []
@@ -158,7 +152,6 @@ async function verifyCredential(vc, instance) {
 
 }
 
-
 async function revokeCredential(vc, instance, verifier_adress) {
   
     const credentialHash = getCredentialHash(vc, issuer, verifier_adress);
@@ -166,7 +159,6 @@ async function revokeCredential(vc, instance, verifier_adress) {
     const result = await instance.revokeCredential(credentialHash);
 
     return result;
-
 
 }
 

@@ -37,7 +37,7 @@ const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/");
 app.post('/register', async (req, res) => {
     try {
 
-        const { did, firstName, lastName, expDate, location, municipality, alcoGroup } = req.body;
+        const { did, firstName, lastName, expDate, municipality } = req.body;
 
         //save data to a local file
         const jsonData = JSON.stringify(req.body);
@@ -50,7 +50,7 @@ app.post('/register', async (req, res) => {
 
         
   
-      const credential = await registerCredential(did, firstName, lastName, expDate, location, municipality, alcoGroup, contract, VERIFYER_ADRESS);
+      const credential = await registerCredential(did, firstName, lastName, expDate, municipality, contract, VERIFYER_ADRESS);
       res.status(201);
       res.send(credential);
     } catch (error) {
