@@ -2,23 +2,29 @@
 
 <h2>Insalling</h2>
 
-Clone the repository.
-cd .\summer-camp-2023\backend
+Clone the repository
+
+$ cd .\summer-camp-2023\backend
 
 install nescecary deppendencies:
-npm i 
+
+$ npm i 
 
 compile:
-npx hardhat compile
+
+$ npx hardhat compile
 
 start the blockchain local instance:
-npx hardhat node
+
+$ npx hardhat node
 
 Deploy the smart contracts:
-npx hardhat run --network localhost scripts/deploy.js
+
+$ npx hardhat run --network localhost scripts/deploy.js
 
 Start the server:
-node scripts/server/index.js
+
+$ node scripts/server/index.js
 
 
 <h2>The Blockchain</h2>
@@ -26,7 +32,7 @@ node scripts/server/index.js
 In this repository are the smart contracts based on EIP-712 and EIP-1812 for Structured Data Types and Verifiable Claims respectively, to perform the registration and verification process of Verifiable Credentials on-chain.
 
 <h3>Structure</h3>
-![alt text](https://github.com/lacchain/vc-contracts/blob/master/_assets/structure.png)
+![Structure](./Resources/structure-backend.png)
 
 
 The main objective is to have a credential registry for creating Liquor liscence and knowledge test verifiable credentials. There is the CredentialRegistry whose function is to maintain the main registry. However, it is not intended to interact directly with applications. 
