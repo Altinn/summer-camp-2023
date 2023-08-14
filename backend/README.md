@@ -1,6 +1,8 @@
 <h1>Backend for Summerproject 2023</h1>
 
-<h2>Insalling</h2>
+![Structure](./Resources/Flow.png)
+
+<h2>Installing</h2>
 
 Clone the repository
 
@@ -32,6 +34,7 @@ $ node scripts/server/index.js
 In this repository are the smart contracts based on EIP-712 and EIP-1812 for Structured Data Types and Verifiable Claims respectively, to perform the registration and verification process of Verifiable Credentials on-chain.
 
 <h3>Structure</h3>
+
 ![Structure](./Resources/structure-backend.png)
 
 
