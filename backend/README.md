@@ -35,7 +35,7 @@ That is why there is a contract that serves as a middleman to be able to registe
 
 <h3>Contracts: </h3>
 
-CredentialRegistry: Master credential registry
+__CredentialRegistry:__ Master credential registry
 
 AbstractClaimsVerifier: Abstract class that represents a credential verifier
 
