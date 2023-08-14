@@ -40,7 +40,7 @@ CredentialRegistry: Master credential registry
 AbstractClaimsVerifier: Abstract class that represents a credential verifier
 
 ClaimsVerifier: Class that allows verifying a specific type of credential.
-
+<br />
 Receive the CredentialRegistry adress as a constructor argument.
 
 ClaimTypes: Generic class that defines EIP712 domain types for credentials. 
