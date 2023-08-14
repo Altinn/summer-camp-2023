@@ -1,40 +1,39 @@
-<h1>Backend for Summerproject 2023</h1>
+# Backend for Summerproject 2023
 
 ![Structure](./Resources/Flow.png)
 
-<h2>Installing</h2>
+## Installing
 
 Clone the repository
-
 ```sh
-$ cd .\summer-camp-2023\backend
+cd .\summer-camp-2023\backend
 ```
-install nescecary deppendencies:
+Install the nescecary deppendencies:
 ```sh
-$ npm i 
+npm install
 ```
-compile:
+Compile the project:
 ```sh
-$ npx hardhat compile
+npx hardhat compile
 ```
-start the blockchain local instance:
+Start the blockchain local instance:
 ```
-$ npx hardhat node
+npx hardhat node
 ```
 Deploy the smart contracts:
 ```sh
-$ npx hardhat run --network localhost scripts/deploy.js
+npx hardhat run --network localhost scripts/deploy.js
 ```
 Start the server:
 ```sh
-$ node scripts/server/index.js
+node scripts/server/index.js
 ```
 
-<h2>The Blockchain</h2>
+## The Blockchain
 
 In this repository are the smart contracts based on EIP-712 and EIP-1812 for Structured Data Types and Verifiable Claims respectively, to perform the registration and verification process of Verifiable Credentials on-chain.
 
-<h3>Structure</h3>
+### Structure
 
 ![Structure](./Resources/structure-backend.png)
 
@@ -42,7 +41,7 @@ In this repository are the smart contracts based on EIP-712 and EIP-1812 for Str
 The main objective is to have a credential registry for creating Liquor liscence and knowledge test verifiable credentials. There is the CredentialRegistry whose function is to maintain the main registry. However, it is not intended to interact directly with applications. 
 That is why there is a contract that serves as a middleman to be able to register each type of credential, this contract is called ClaimsVerifier, and it is in charge of both registering credential hashes and verifying them by making internal calls to the CredentialRegistry. 
 
-<h3>Contracts: </h3>
+### Contracts
 
 * __CredentialRegistry:__ Master credential registry
 
@@ -54,7 +53,7 @@ That is why there is a contract that serves as a middleman to be able to registe
 
 * __ICredentialRegistry:__ Interface that defines the main methods of a CredentialRegistry, as well as the metadata of each credential. 
 
-<h3>Security roles</h3>
+### Security roles
 
 The contracts make use of the OpenZeppelin Access Control System, for which two roles have been defined:
 
@@ -66,13 +65,11 @@ The ISSUER_ROLE should be assigned to any account that is going to register a cr
 
 The SIGNER_ROLE should be assigned to any account that is going to sign a credential within the ClaimsVerifier contract.
 
-<H3>Pre-requisites</H3>
+### Pre-requisites
 
-NodeJS > 12.4
-
-Etehrs @ 5.7.2
-
-OpenZeppelin Contracts @ 3.0.0
+- NodeJS > 12.4
+- Etehrs @ 5.7.2
+- OpenZeppelin Contracts @ 3.0.0
 
 
 
