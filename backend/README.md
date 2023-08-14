@@ -6,28 +6,29 @@
 
 Clone the repository
 
+```sh
 $ cd .\summer-camp-2023\backend
-
+```
 install nescecary deppendencies:
-
+```sh
 $ npm i 
-
+```
 compile:
-
+```sh
 $ npx hardhat compile
-
+```
 start the blockchain local instance:
-
+```
 $ npx hardhat node
-
+```
 Deploy the smart contracts:
-
+```sh
 $ npx hardhat run --network localhost scripts/deploy.js
-
+```
 Start the server:
-
+```sh
 $ node scripts/server/index.js
-
+```
 
 <h2>The Blockchain</h2>
 
