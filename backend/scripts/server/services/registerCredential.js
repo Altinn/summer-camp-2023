@@ -97,7 +97,7 @@ async function registerCredential(
 	const vc = {
 		"@context": "https://www.w3.org/2018/credentials/v1",
 		id: "73bde252-cb3e-44ab-94f9-eba6a8a2f28d",
-		type: "VerifiableCredential",
+		type: "VerifiableCredential, KnowledgeTest",
 		issuer: `did:lac:main:${issuer.address}`,
 		issuanceDate: moment().toISOString(),
 		expirationDate: moment(expDate, "DD-MM-YYYY").toISOString(),
