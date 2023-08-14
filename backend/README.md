@@ -36,11 +36,15 @@ That is why there is a contract that serves as a middleman to be able to registe
 <h3>Contracts: </h3>
 
 CredentialRegistry: Master credential registry
-/n
+
 AbstractClaimsVerifier: Abstract class that represents a credential verifier
+
 ClaimsVerifier: Class that allows verifying a specific type of credential.
+
 Receive the CredentialRegistry adress as a constructor argument.
+
 ClaimTypes: Generic class that defines EIP712 domain types for credentials. 
+
 ICredentialRegistry: Interface that defines the main methods of a CredentialRegistry, as well as the metadata of each credential. 
 
 <h3>Security roles</h3>
