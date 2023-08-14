@@ -1,5 +1,7 @@
 <h1>Backend for Summerproject 2023</h1>
 
+![Structure](./Resources/Flow.png)
+
 <h2>Insalling</h2>
 
 Clone the repository
