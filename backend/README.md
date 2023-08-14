@@ -26,7 +26,7 @@ node scripts/server/index.js
 In this repository are the smart contracts based on EIP-712 and EIP-1812 for Structured Data Types and Verifiable Claims respectively, to perform the registration and verification process of Verifiable Credentials on-chain.
 
 <h3>Structure</h3>
-![alt text](https://github.com/lacchain/vc-contracts/blob/master/_assets/structure.png)
+![My Image](backend\Resources\structure-backend.png)
 
 
 The main objective is to have a credential registry for creating Liquor liscence and knowledge test verifiable credentials. There is the CredentialRegistry whose function is to maintain the main registry. However, it is not intended to interact directly with applications. 
