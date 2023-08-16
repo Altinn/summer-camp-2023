@@ -1,0 +1,13 @@
+{
+  "name": "summer-camp-2023",
+  "version": "1.0.0",
+  "description": "Backlog for sommercamp 2023",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.36.2"
+  }
+}
