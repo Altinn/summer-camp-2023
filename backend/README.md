@@ -37,9 +37,8 @@ In this repository are the smart contracts based on EIP-712 and EIP-1812 for Str
 
 ![Structure](./Resources/structure-backend.png)
 
-
-The main objective is to have a credential registry for creating Liquor liscence and knowledge test verifiable credentials. There is the CredentialRegistry whose function is to maintain the main registry. However, it is not intended to interact directly with applications. 
-That is why there is a contract that serves as a middleman to be able to register each type of credential, this contract is called ClaimsVerifier, and it is in charge of both registering credential hashes and verifying them by making internal calls to the CredentialRegistry. 
+The main objective is to have a credential registry for creating Liquor liscence and knowledge test verifiable credentials. There is the CredentialRegistry whose function is to maintain the main registry. However, it is not intended to interact directly with applications.
+That is why there is a contract that serves as a middleman to be able to register each type of credential, this contract is called ClaimsVerifier, and it is in charge of both registering credential hashes and verifying them by making internal calls to the CredentialRegistry.
 
 ### Contracts
 
@@ -49,9 +48,9 @@ That is why there is a contract that serves as a middleman to be able to registe
 
 * __ClaimsVerifier:__ Class that allows verifying a specific type of credential. Receive the CredentialRegistry adress as a constructor argument.
 
-* __ClaimTypes:__ Generic class that defines EIP712 domain types for credentials. 
+* __ClaimTypes:__ Generic class that defines EIP712 domain types for credentials.
 
-* __ICredentialRegistry:__ Interface that defines the main methods of a CredentialRegistry, as well as the metadata of each credential. 
+* __ICredentialRegistry:__ Interface that defines the main methods of a CredentialRegistry, as well as the metadata of each credential.
 
 ### Security roles
 
@@ -70,10 +69,3 @@ The SIGNER_ROLE should be assigned to any account that is going to sign a creden
 - NodeJS > 12.4
 - Etehrs @ 5.7.2
 - OpenZeppelin Contracts @ 3.0.0
-
-
-
-
-
-
-
