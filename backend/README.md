@@ -1,6 +1,6 @@
 # Backend for Summerproject 2023
 
-![Structure](./Resources/Flow.svg)
+![Structure](./Resources/Flow.png)
 
 ## Installing
 
